@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Marching Cadence – ESL Practice</title>
+<style>
+:root{--bg:#f6f4ee;--card:#fff;--tx:#1f2a1f;--mut:#6a736a;--ac:#3b5d34;--ac2:#e8efe5;--ok:#1d7a3a;--okb:#dff3e4;--bad:#b3261e;--badb:#fbe3e1;--bd:#d9d6cb;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161a15;--card:#20261f;--tx:#eef2ea;--mut:#9aa596;--ac:#8fc07f;--ac2:#2b3529;--ok:#7fd69a;--okb:#1f3a29;--bad:#ff9a92;--badb:#40211f;--bd:#3a4337}}
+:root[data-theme="dark"]{--bg:#161a15;--card:#20261f;--tx:#eef2ea;--mut:#9aa596;--ac:#8fc07f;--ac2:#2b3529;--ok:#7fd69a;--okb:#1f3a29;--bad:#ff9a92;--badb:#40211f;--bd:#3a4337}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{background:var(--ac);color:#fff;padding:14px 16px}header h1{margin:0;font-size:20px}header small{opacity:.85}
+@media (prefers-color-scheme:dark){header{color:#10150f}}
+nav{display:flex;gap:6px;overflow-x:auto;padding:10px 12px;background:var(--card);border-bottom:1px solid var(--bd)}
+nav button{flex:0 0 auto;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:20px;padding:6px 12px;font-size:13px;cursor:pointer}
+nav button.on{background:var(--ac);color:#fff;border-color:var(--ac)}nav button small{color:inherit;opacity:.7}
+main{max-width:760px;margin:0 auto;padding:14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;margin:10px 0}
+.intro{background:var(--ac2)}h2{margin:6px 0}
+button.b,.p{border:1px solid var(--ac);background:var(--ac2);color:var(--tx);border-radius:8px;padding:5px 10px;font-size:14px;cursor:pointer;margin:2px}
+button.go{background:var(--ac);color:#fff;border:0;border-radius:8px;padding:7px 14px;cursor:pointer;font-size:15px}
+@media (prefers-color-scheme:dark){button.go{color:#10150f}}
+input[type=text],select{font:inherit;padding:6px 8px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);max-width:100%}
+input.tx{width:100%;margin:6px 0}.ok{background:var(--okb)!important;color:var(--ok)}.bad{background:var(--badb)!important;color:var(--bad)}
+.mono{font-family:ui-monospace,Menlo,monospace;font-size:17px;word-break:break-all}.mono span{padding:1px 0}
+.mono .ok{color:var(--ok)}.mono .bad{color:var(--bad);text-decoration:underline}
+.chip{display:inline-block;border:1px solid var(--ac);border-radius:16px;padding:3px 11px;margin:3px;cursor:pointer;background:var(--card)}
+.ans{min-height:42px;border:2px dashed var(--bd);border-radius:10px;padding:4px;margin:6px 0}
+.msg{font-size:14px;min-height:20px;margin:4px 0}.mut{color:var(--mut);font-size:14px}
+.foot{display:flex;justify-content:space-between;margin:16px 0}.foot button{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;padding:8px 16px;cursor:pointer}
+.sc{float:right;font-size:14px}
+</style></head><body>
+<header><h1>🪖 Marching Cadence – Listen, Learn, Say It! <span class="sc" id="sc"></span></h1><small>60-minute ESL lesson • tap ▶ to hear every line</small></header>
+<nav id="nav"></nav><main id="main"></main>
+<script>
+const L=["I don’t want no teenage queens.","I just want my guns on me.","If I die in the combat zone.","Say a prayer and ship me home.","Pin my medals upon my chest.","Tell my mum I’ve done my best.","Hear us well.","We’re the best in Colombia.","Fear us not.","If you’re friend.","If you need us.","We’ll be there."];
+const S=[["🎧 Listen",5],["✍️ Transcribe",12],["🔽 Dropdowns",8],["⌨️ Type blanks",10],["🧩 Word bank",8],["🎤 Speak",8],["⭐ Extras",6],["🎵 Full song",3]];
+let cur=0;const done=new Set();
+const n=s=>s.replace(/[‘’]/g,"'").trim();
+const core=w=>w.replace(/[.,!?]/g,"");
+const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const pool=[...new Set(L.join(" ").split(" ").map(core).filter(w=>w.length>=3))];
+function speak(t,r){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="en-US";u.rate=r;speechSynthesis.speak(u)}catch(e){}}
+const pl=i=>`<button class="p" data-i="${i}" data-r="1">▶ Normal</button><button class="p" data-i="${i}" data-r="0.55">🐢 Slow</button>`;
+document.addEventListener("click",e=>{const b=e.target.closest(".p");if(b)speak(L[+b.dataset.i],+b.dataset.r)});
+function mark(k){done.add(k);document.getElementById("sc").textContent="⭐ "+done.size+" lines mastered"}
+function nav(){document.getElementById("nav").innerHTML=S.map((s,i)=>`<button class="${i==cur?"on":""}" onclick="go(${i})">${s[0]} <small>${s[1]}′</small></button>`).join("")}
+function go(i){cur=i;nav();R[i]();scrollTo(0,0)}
+const wrap=(t,d,body)=>`<div class="card intro"><h2>${t}</h2><div>${d}</div></div>${body}<div class="foot"><button onclick="go(Math.max(0,cur-1))">← Back</button><button onclick="go(Math.min(7,cur+1))">Next →</button></div>`;
+const M=h=>document.getElementById("main").innerHTML=h;
+
+function r0(){M(wrap("Warm-up: listen & repeat","Listen to each line at slow speed, then at normal speed. Repeat out loud, like a real march! <b>Teacher tip:</b> clap the rhythm.",L.map((l,i)=>`<div class="card"><b>${i+1}.</b> ${l}<br>${pl(i)}</div>`).join("")))}
+
+function r1(){M(wrap("Exact transcription","Listen, then type the line <b>exactly</b>: every letter, capital letter and full stop must be correct. The red letters show your mistakes.",L.map((l,i)=>`<div class="card"><b>Line ${i+1}</b> ${pl(i)}<input class="tx" type="text" id="t${i}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type what you hear…"><button class="go" onclick="chkT(${i})">Check</button> <button class="b" onclick="ansT(${i})">Show answer</button><div class="msg mono" id="tm${i}"></div></div>`).join("")))}
+function chkT(i){const g=n(document.getElementById("t"+i).value),e=n(L[i]),m=document.getElementById("tm"+i);
+if(g===e){m.innerHTML="<span class='ok'>✅ Perfect! Exactly right.</span>";mark("t"+i);return}
+let h="",first=-1;for(let k=0;k<Math.max(g.length,e.length);k++){const c=g[k]||"_";if(g[k]===e[k])h+=`<span class="ok">${c}</span>`;else{if(first<0)first=k;h+=`<span class="bad">${c==" "?"␣":c}</span>`}}
+m.innerHTML=h+`<div class="mut" style="font-family:system-ui">❌ Not exact yet. First mistake: letter ${first+1}. ${g.length<e.length?"Your line is too short.":g.length>e.length?"Your line is too long.":""}</div>`}
+function ansT(i){document.getElementById("tm"+i).innerHTML="<span>"+L[i]+"</span>"}
+
+function r2(){M(wrap("Choose the missing word","Pick the correct word from the list. Listen first!",L.map((l,i)=>{const w=l.split(" "),c=w.map(core);let k=c.indexOf([...c].sort((a,b)=>b.length-a.length)[0]);const a=c[k];
+const opts=shuf([a,...shuf(pool.filter(x=>x.toLowerCase()!=a.toLowerCase())).slice(0,2)]);
+const pre=w.slice(0,k).join(" "),post=w.slice(k+1).join(" ");
+return `<div class="card"><b>${i+1}.</b> ${pre} <select id="d${i}" onchange="chkD(${i},'${a.replace("'","\\'")}')"><option value="">— choose —</option>${opts.map(o=>`<option>${o}</option>`).join("")}</select>${w[k].replace(core(w[k]),"")} ${post}<br>${pl(i)}</div>`}).join("")))}
+function chkD(i,a){const s=document.getElementById("d"+i);if(!s.value)return;const ok=s.value==a;s.className=ok?"ok":"bad";if(ok)mark("d"+i)}
+
+function blanksOf(i){const w=L[i].split(" "),idx=w.map((x,k)=>k).filter(k=>core(w[k]).length>=3).sort((a,b)=>core(w[b]).length-core(w[a]).length).slice(0,w.length>=5?3:2);return idx}
+function r3(){M(wrap("Fill the blanks (no help!)","Type the missing words. Listen carefully – there is no word list. Capital letters don’t matter here.",L.map((l,i)=>{const w=l.split(" "),b=blanksOf(i);
+return `<div class="card"><b>${i+1}.</b> ${w.map((x,k)=>b.includes(k)?`<input type="text" class="fb${i}" data-a="${core(x)}" size="${core(x).length+2}" autocomplete="off" autocapitalize="off" spellcheck="false">${x.replace(core(x),"")}`:x).join(" ")}<br>${pl(i)} <button class="go" onclick="chkF(${i})">Check</button> <span class="msg" id="fm${i}"></span></div>`}).join("")))}
+function chkF(i){let all=true;document.querySelectorAll(".fb"+i).forEach(x=>{const ok=n(x.value).toLowerCase()==n(x.dataset.a).toLowerCase();x.className="fb"+i+(ok?" ok":" bad");if(!ok)all=false});
+document.getElementById("fm"+i).textContent=all?"✅ Great!":"❌ Try again";if(all)mark("f"+i)}
+
+const B={};
+function r4(){L.forEach((l,i)=>B[i]={bank:shuf(l.split(" ")),ans:[]});M(wrap("Build the sentence","Tap the words in the right order to build the line. Tap a word in the box to take it back. Use ▶ to check what you hear!",L.map((l,i)=>`<div class="card" id="bc${i}"></div>`).join("")));L.forEach((l,i)=>bd(i))}
+function bd(i){const s=B[i],el=document.getElementById("bc"+i);el.innerHTML=`<b>${i+1}.</b> ${pl(i)}<div class="ans">${s.ans.map((w,k)=>`<span class="chip" onclick="bu(${i},${k})">${w}</span>`).join("")}</div><div>${s.bank.map((w,k)=>`<span class="chip" onclick="bp(${i},${k})">${w}</span>`).join("")}</div><button class="go" onclick="bk(${i})">Check</button> <button class="b" onclick="br(${i})">Reset</button> <span class="msg" id="bm${i}"></span>`}
+function bp(i,k){const s=B[i];s.ans.push(s.bank.splice(k,1)[0]);bd(i)}
+function bu(i,k){const s=B[i];s.bank.push(s.ans.splice(k,1)[0]);bd(i)}
+function br(i){B[i]={bank:shuf(L[i].split(" ")),ans:[]};bd(i)}
+function bk(i){const ok=B[i].ans.join(" ")==L[i],m=document.getElementById("bm"+i);m.textContent=ok?"✅ Correct!":"❌ Not yet – check the order.";if(ok)mark("b"+i)}
+
+function r5(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;M(wrap("Pronunciation challenge","Press 🎤, then say the line clearly. The computer shows which words it understood. Aim for 80% or more!"+(SR?"":"<br><b>⚠️ Speech recognition needs Chrome, Edge or Safari with microphone permission.</b>"),L.map((l,i)=>`<div class="card"><b>${i+1}.</b> ${pl(i)} <button class="go" onclick="sp(${i})">🎤 Speak</button><div class="msg" id="sm${i}">${l}</div></div>`).join("")))}
+function sp(i){const SR=window.SpeechRecognition||window.webkitSpeechRecognition,m=document.getElementById("sm"+i);if(!SR){m.textContent="Speech recognition is not available in this browser.";return}
+const r=new SR();r.lang="en-US";r.maxAlternatives=3;m.textContent="🎙️ Listening…";
+r.onresult=e=>{const heard=[...e.results[0]].map(a=>a.transcript.toLowerCase().replace(/[‘’]/g,"'").replace(/[^a-z' ]/g,"").split(/\s+/));
+const t=L[i].split(" ");let hit=0;const h=t.map(w=>{const c=n(core(w)).toLowerCase();const ok=heard.some(a=>a.includes(c));if(ok)hit++;return `<span class="${ok?"ok":"bad"}">${w}</span>`}).join(" ");
+const p=Math.round(hit/t.length*100);m.innerHTML=`${h}<br>You said: “${e.results[0][0].transcript}” — <b>${p}%</b> ${p>=80?"✅ Excellent!":"🔁 Try again"}`;if(p>=80)mark("s"+i)};
+r.onerror=()=>m.textContent="Couldn’t hear you. Check the microphone and try again.";r.start()}
+
+function r6(){const q=shuf([...L.keys()]).slice(0,6);M(wrap("Extra: Listen & choose","Press ▶ and choose the line you hear. Careful – some lines are similar!",q.map((i,k)=>{const o=shuf([i,...shuf([...L.keys()].filter(x=>x!=i)).slice(0,2)]);return `<div class="card"><b>${k+1}.</b> ${pl(i)}<div>${o.map(x=>`<button class="b" onclick="lc(this,${x==i},${i})">${L[x]}</button>`).join("<br>")}</div></div>`}).join("")+`<div class="card"><h2>Rhyme hunt</h2>Which words rhyme? <i>zone – ?</i> <i>chest – ?</i> <i>queens/me – ?</i><br>Answer: zone–home, chest–best. Say them aloud!<br>Then <b>perform</b> the full cadence in groups, with marching steps. 💪</div>`))}
+function lc(b,ok,i){b.className="b "+(ok?"ok":"bad");if(ok)mark("l"+i)}
+
+function r7(){M(wrap("🎵 The full cadence","Listen to the complete song, then sing and march together!",`<div class="card"><iframe src="https://archive.org/embed/whats-app-ptt-2026-11-06-at-8.57.01-am" width="100%" height="40" frameborder="0" allowfullscreen style="max-width:100%"></iframe><div class="mut">If the player doesn’t load: <a href="https://archive.org/details/whats-app-ptt-2026-11-06-at-8.57.01-am" target="_blank" rel="noopener">open the audio on archive.org</a>.</div></div><div class="card" style="text-align:center">${L.map(l=>l).join("<br>")}</div>`))}
+const R=[r0,r1,r2,r3,r4,r5,r6,r7];go(0);
+</script></body></html>
